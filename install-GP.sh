@@ -36,6 +36,7 @@ chmod +x /bin/lsvpn
 error-handle $? 'Something went wrong whilst making the script executable.'
 
 echo 'Install complete!'
+echo ''
 echo "To connect to the Belgian Lansweeper VPN, enter 'lsvpn --connect'."
 echo "To disconnect from the Belgian Lansweeper VPN, enter 'lsvpn --disconnect'."
 
