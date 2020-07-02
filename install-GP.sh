@@ -20,19 +20,19 @@ if [ $UID -ne 0 ]; then
 fi
 
 echo 'Downloading GlobalProtect VPN Client installer...'
-sudo wget -O /tmp/GlobalProtectInstaller.deb https://github.com/YordiDR-LS/Linux-GPInstaller/blob/master/GlobalProtect_CLI-5.1.4.0-9.deb?raw=true &> /dev/null
+wget -O /tmp/GlobalProtectInstaller.deb https://github.com/YordiDR-LS/Linux-GPInstaller/blob/master/GlobalProtect_CLI-5.1.4.0-9.deb?raw=true &> /dev/null
 error-handle $? 'Something went wrong whilst downloading the installer.'
 
 echo 'Installing GlobalProtect VPN Client...'
-sudo dpkg -i /tmp/GlobalProtectInstaller.deb
+dpkg -i /tmp/GlobalProtectInstaller.deb
 error-handle $? 'Something went wrong whilst installing the GlobalProtect VPN Client.'
 
-sudo rm /tmp/GlobalProtectInstaller.deb
+rm /tmp/GlobalProtectInstaller.deb
 
 echo 'Downloading script to connect to VPN...'
-sudo wget -O /bin/lsvpn https://raw.githubusercontent.com/YordiDR-LS/Linux-GPInstaller/master/lsvpn.sh
+wget -qO /bin/lsvpn https://raw.githubusercontent.com/YordiDR-LS/Linux-GPInstaller/master/lsvpn.sh
 error-handle $? 'Something went wrong whilst downloading the script.'
-sudo chmod +x /bin/lsvpn
+chmod +x /bin/lsvpn
 error-handle $? 'Something went wrong whilst making the script executable.'
 
 echo 'Install complete!'
