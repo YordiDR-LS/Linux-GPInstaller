@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ $UID -ne 0 ]; then
+  echo 'This script requires root access to install packages.'
+  echo 'Please relaunch the script using sudo.'
+  exit 1
+fi
+
 function error-handle {
 if [ -z $3 ]; then
   declare -ri expectedCode=0
@@ -13,11 +19,6 @@ if [ $1 -ne $expectedCode ]; then
   exit 1
 fi
 }
-if [ $UID -ne 0 ]; then
-  echo 'This script requires root access to install packages.'
-  echo 'Please relaunch the script using sudo.'
-  exit 1
-fi
 
 echo 'Downloading GlobalProtect VPN Client installer...'
 wget -O /tmp/GlobalProtectInstaller.deb https://github.com/YordiDR-LS/Linux-GPInstaller/blob/master/GlobalProtect_CLI-5.1.4.0-9.deb?raw=true &> /dev/null
