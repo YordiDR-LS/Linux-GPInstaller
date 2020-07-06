@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ $UID -ne 0 ]; then
+  echo 'You are not root. Use sudo to run this script.'
+  exit 2
+fi
+
 function error-handle {
 if [ -z $3 ]; then
   declare -ri expectedCode=0
@@ -18,7 +23,7 @@ function connect {
 systemctl status gpd | grep 'running' &> /dev/null
 if [ $? -ne 0 ]; then
   echo 'Starting the GlobalProtect service... (this may prompt for a sudo password)'
-  sudo systemctl start gpd
+  systemctl start gpd
   error-handle $? 'Something went wrong whilst starting the GlobalProtect service. Is the VPN client installed?'
 fi
 
@@ -26,15 +31,14 @@ echo 'Connecting to the Belgian Lansweeper VPN...'
 globalprotect connect --portal gp.lansweeper.com
 error-handle $? 'Something went wrong whilst connecting to the Belgian Lansweeper VPN.' 1
 
-declare -r route=$(ip route | grep '192.168.0.0/22')
-error-handle $? 'Something went wrong whilst determining the route to the Lansweeper office.'
+declare -r interface=$(ip route | grep '192.168.0.0/22' | perl -nle 'if ( /dev\s+(\S+)/ ) {print $1}')
+error-handle $? 'Something went wrong whilst determining the VPN interface.'
 
-echo 'Fixing the routing entries... (this may prompt for a sudo password)'
-sudo ip route del $route
-error-handle $? 'Something went wrong whilst fixing the route to the Lansweeper office.'
-
-sudo ip route add $route metric 1
-error-handle $? 'Something went wrong whilst fixing the route to the Lansweeper office.'
+echo 'Adding static routes to Lansweeper devices...'
+ip route add 192.168.1.201 dev $interface
+error-handle $? 'Something went wrong whilst adding the required routes.'
+ip route add 192.168.1.251 dev $interface
+error-handle $? 'Something went wrong whilst adding the required routes.'
 
 echo 'All done!'
 exit 0
@@ -42,7 +46,7 @@ exit 0
 
 function disconnect {
   echo 'Stopping the GlobalProtect service... (this may prompt for a root password)'
-  sudo systemctl stop gpd
+  systemctl stop gpd
   error-handle $? 'Something went wrong whilst stopping the GlobalProtect service.'
 }
 
