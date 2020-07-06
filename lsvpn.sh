@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if [ $UID -ne 0 ]; then
-  echo 'You are not root. Use sudo to run this script.'
-  exit 2
-fi
-
 function error-handle {
 if [ -z $3 ]; then
   declare -ri expectedCode=0
@@ -20,10 +15,10 @@ fi
 }
 
 function connect {
-systemctl status gpd | grep 'running' &> /dev/null
+sudo systemctl status gpd | grep 'running' &> /dev/null
 if [ $? -ne 0 ]; then
   echo 'Starting the GlobalProtect service... (this may prompt for a sudo password)'
-  systemctl start gpd
+  sudo systemctl start gpd &> /dev/null
   error-handle $? 'Something went wrong whilst starting the GlobalProtect service. Is the VPN client installed?'
 fi
 
@@ -35,9 +30,9 @@ declare -r interface=$(ip route | grep '192.168.0.0/22' | perl -nle 'if ( /dev\s
 error-handle $? 'Something went wrong whilst determining the VPN interface.'
 
 echo 'Adding static routes to Lansweeper devices...'
-ip route add 192.168.1.201 dev $interface
+sudo ip route add 192.168.1.201 dev $interface &> /dev/null
 error-handle $? 'Something went wrong whilst adding the required routes.'
-ip route add 192.168.1.251 dev $interface
+sudo ip route add 192.168.1.251 dev $interface &> /dev/null
 error-handle $? 'Something went wrong whilst adding the required routes.'
 
 echo 'All done!'
@@ -46,7 +41,7 @@ exit 0
 
 function disconnect {
   echo 'Stopping the GlobalProtect service... (this may prompt for a root password)'
-  systemctl stop gpd
+  sudo systemctl stop gpd &> /dev/null
   error-handle $? 'Something went wrong whilst stopping the GlobalProtect service.'
 }
 
