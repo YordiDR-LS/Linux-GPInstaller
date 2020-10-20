@@ -30,9 +30,11 @@ declare -r interface=$(ip route | grep '192.168.0.0/22' | perl -nle 'if ( /dev\s
 error-handle $? 'Something went wrong whilst determining the VPN interface.'
 
 echo 'Adding static routes to Lansweeper devices...'
-sudo ip route add 192.168.1.201 dev $interface &> /dev/null
+sudo ip route add 192.168.1.201/32 dev $interface &> /dev/null
 error-handle $? 'Something went wrong whilst adding the required routes.'
-sudo ip route add 192.168.1.251 dev $interface &> /dev/null
+sudo ip route add 192.168.1.251/32 dev $interface &> /dev/null
+error-handle $? 'Something went wrong whilst adding the required routes.'
+sudo ip route add 192.168.1.66/32 dev $interface &> /dev/null
 error-handle $? 'Something went wrong whilst adding the required routes.'
 
 echo 'All done!'
