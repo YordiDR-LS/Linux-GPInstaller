@@ -8,5 +8,5 @@ sudo su -c "bash <(wget -qO- https://raw.githubusercontent.com/YordiDR-LS/Linux-
 
 Command used to connect to the VPN:
 ```bash
-lsvpn.sh --connect
+lsvpn --connect
 ``` 
